@@ -5,25 +5,19 @@ from http.server import HTTPServer, SimpleHTTPRequestHandler
 import pandas
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-env = Environment(
-    loader=FileSystemLoader('.'),
-    autoescape=select_autoescape(['html', 'xml'])
-)
+def catalog_from_excel():
+    drinks_catalog = pandas.read_excel(
+        "goods.xlsx",
+        sheet_name='Лист1',
+        usecols=['Категория', 'Название', 'Сорт', 'Цена', 'Картинка', 'Акция'],
+        na_values=['N/A', 'NA'],
+        keep_default_na=False
+    ).sort_values('Категория').to_dict(orient='records')
 
-template = env.get_template('template.html')
-
-drinks_catalog = pandas.read_excel(
-    "wine3.xlsx",
-    sheet_name='Лист1',
-    usecols=['Категория', 'Название', 'Сорт', 'Цена', 'Картинка', 'Акция'],
-    na_values=['N/A', 'NA'],
-    keep_default_na=False
-).sort_values('Категория').to_dict(orient='records')
-
-formatted_drinks_catalog = collections.defaultdict(list)
-for drink in drinks_catalog:
-    formatted_drinks_catalog[drink['Категория']].append(drink)
-
+    formatted_drinks_catalog = collections.defaultdict(list)
+    for drink in drinks_catalog:
+        formatted_drinks_catalog[drink['Категория']].append(drink)
+    return formatted_drinks_catalog
 
 def get_age():
     age = datetime.datetime.now().year - 1920
@@ -34,13 +28,25 @@ def get_age():
     return f'{age} лет'
 
 
-rendered_page = template.render(
-    age_text=get_age(),
-    drinks_catalog=formatted_drinks_catalog,
-)
+def main():
+    env = Environment(
+        loader=FileSystemLoader('.'),
+        autoescape=select_autoescape(['html', 'xml'])
+    )
 
-with open('index.html', 'w', encoding="utf8") as file:
-    file.write(rendered_page)
+    template = env.get_template('template.html')
 
-server = HTTPServer(('0.0.0.0', 8000), SimpleHTTPRequestHandler)
-server.serve_forever()
+    rendered_page = template.render(
+        age_text=get_age(),
+        drinks_catalog=catalog_from_excel(),
+    )
+
+    with open('index.html', 'w', encoding="utf8") as file:
+        file.write(rendered_page)
+
+    server = HTTPServer(('0.0.0.0', 8000), SimpleHTTPRequestHandler)
+    server.serve_forever()
+
+
+if __name__ == '__main__':
+    main()
