@@ -5,6 +5,7 @@ from http.server import HTTPServer, SimpleHTTPRequestHandler
 import pandas
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
+
 def catalog_from_excel():
     drinks_catalog = pandas.read_excel(
         "goods.xlsx",
@@ -19,8 +20,10 @@ def catalog_from_excel():
         formatted_drinks_catalog[drink['Категория']].append(drink)
     return formatted_drinks_catalog
 
+
 def get_age():
-    age = datetime.datetime.now().year - 1920
+    year_foundation = 1920
+    age = datetime.datetime.now().year - year_foundation
     if age % 10 == 1 and age % 100 != 11:
         return f'{age} год'
     if age % 10 in [2, 3, 4] and not (age % 100 in [12, 13, 14]):
