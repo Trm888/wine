@@ -1,3 +1,4 @@
+import argparse
 import collections
 import datetime
 from http.server import HTTPServer, SimpleHTTPRequestHandler
@@ -7,8 +8,12 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 
 def catalog_from_excel():
+    parser = argparse.ArgumentParser(description='Запуск сайта')
+    parser.add_argument('-p', '--filepath', help='Укажите путь к файлу', default='goods.xlsx')
+    args = parser.parse_args()
+    filepath = args.filepath
     drinks_catalog = pandas.read_excel(
-        "goods.xlsx",
+        filepath,
         sheet_name='Лист1',
         usecols=['Категория', 'Название', 'Сорт', 'Цена', 'Картинка', 'Акция'],
         na_values=['N/A', 'NA'],
@@ -38,7 +43,6 @@ def main():
     )
 
     template = env.get_template('template.html')
-
     rendered_page = template.render(
         age_text=get_age(),
         drinks_catalog=catalog_from_excel(),
