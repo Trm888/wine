@@ -27,8 +27,8 @@ def catalog_from_excel():
 
 
 def get_age():
-    year_foundation = 1920
-    age = datetime.datetime.now().year - year_foundation
+    foundation_year = 1920
+    age = datetime.datetime.now().year - foundation_year
     if age % 10 == 1 and age % 100 != 11:
         return f'{age} год'
     if age % 10 in [2, 3, 4] and not (age % 100 in [12, 13, 14]):
