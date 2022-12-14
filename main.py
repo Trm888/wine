@@ -7,7 +7,7 @@ import pandas
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 
-def catalog_from_excel():
+def get_catalog_from_excel():
     parser = argparse.ArgumentParser(description='Запуск сайта')
     parser.add_argument('-p', '--filepath', help='Укажите путь к файлу', default='goods.xlsx')
     args = parser.parse_args()
@@ -45,7 +45,7 @@ def main():
     template = env.get_template('template.html')
     rendered_page = template.render(
         age_text=get_age(),
-        drinks_catalog=catalog_from_excel(),
+        drinks_catalog=get_catalog_from_excel(),
     )
 
     with open('index.html', 'w', encoding="utf8") as file:
